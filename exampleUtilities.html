@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Example Utilities</title>
+</head>
+<body onLoad="showData()">
+  <div id="content">
+  </div>
+
+  <!-- Dataset source files -->
+<script src="js/lib/miso.ds.deps.min.0.2.1.js"></script>
+<script src="misoInheritUtilities/printDVAsList.js"></script>
+<script src="misoInheritUtilities/mergeDerivedSets.js"></script>
+<script src="misoInheritUtilities/splitDataSet.js"></script>
+<script type="text/javascript">
+	function showData(){
+		var ds = new Miso.Dataset({
+  		url : "sampleData/food.csv",
+  		delimiter : ","
+		});
+
+		var out = document.getElementById("content");
+
+		ds.fetch({
+			success : function() {
+				//printing function
+				out.innerHTML = "<p>printDVAsList Output:</p>"
+				out.innerHTML = out.innerHTML + ds.printDVAsList();
+
+				//mergeDerived
+				out.innerHTML = out.innerHTML + "<p>mergeDerivedSets Output:</p>"
+				var grpSum = ds.groupBy('type', ['someUnit']);
+				var grpCnt = ds.countBy('type');
+				var merged = [grpSum, grpCnt].mergeDerivedSets();
+
+				out.innerHTML = out.innerHTML + grpSum.printDVAsList();
+				out.innerHTML = out.innerHTML + "<p>+</p>"
+				out.innerHTML = out.innerHTML + grpCnt.printDVAsList();
+				out.innerHTML = out.innerHTML + "<p>=</p>"
+				out.innerHTML = out.innerHTML + merged.printDVAsList();
+
+				//split
+				out.innerHTML = out.innerHTML + "<p>splitDataSets Output:</p>"
+				var splitArr = ds.splitDataSet("type");
+				for (var i = 0; i < splitArr.length; i++) {
+					out.innerHTML = out.innerHTML + splitArr[i].printDVAsList();
+				};
+
+			}
+		});
+
+		
+	}
+</script>
+
+
+
+
+
+</body>
+</html>
