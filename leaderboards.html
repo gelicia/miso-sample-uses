@@ -1,0 +1,125 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Leaderboard Example</title>
+</head>
+<body onLoad="showData()">
+  <div id="content">
+  </div>
+
+  <!-- Dataset source files -->
+<script src="js/lib/miso.ds.deps.min.0.2.1.js"></script>
+<script src="misoInheritUtilities/mergeDerivedSets.js"></script>
+<script src="misoInheritUtilities/splitDataSet.js"></script>
+<!--This should be put in it's own file in real life, I put it here for succinctness -->
+<script type="text/javascript">
+	Miso.Dataset.prototype.printUsrScoreArray = function() {
+		var outStr;
+		var prevScore;
+		var rank = 1;
+		if (this.length > 0) {
+			outStr = "<table cellpadding=\"3\" border=\"3\">";
+			outStr = outStr + "<tr align=\"center\">" + "<td>" + "<b>Rank</b>" + "</td>" + "<td>" + "<b>Nickname</b>" + "</td>" + "<td>" + "<b>Overall Score</b>" + "</td>" + "<td>" + "<b>Participations</b>" + "</td>" + "</tr>";
+			this.each(
+				function(row){
+					if (prevScore != undefined && row.score != prevScore){
+						rank++;
+					}
+					outStr = outStr + "<tr align=\"center\">" + "<td>" + rank + "</td>" + "<td>" + row.user + "</td>" + "<td>" + row.score + "</td>" + "<td>" + row.count + "</td>" + "</tr>";
+					prevScore = row.score;
+				}
+			);	
+		}
+		return outStr;
+	};
+
+
+
+		Miso.Dataview.prototype.printUsrScoreArray = function() {
+		var outStr;
+		var prevScore;
+		var rank = 1;
+		if (this.length > 0) {
+			outStr = "<table cellpadding=\"3\" border=\"3\">";
+			outStr = outStr + "<tr align=\"center\">" + "<td>" + "<b>Rank</b>" + "</td>" + "<td>" + "<b>Nickname</b>" + "</td>" + "<td>" + "<b>Overall Score</b>" + "</td>" + "<td>" + "<b>Participations</b>" + "</td>" + "</tr>";
+			this.each(
+				function(row){
+					if (prevScore != undefined && row.score != prevScore){
+						rank++;
+					}
+					outStr = outStr + "<tr align=\"center\">" + "<td>" + rank + "</td>" + "<td>" + row.user + "</td>" + "<td>" + row.score + "</td>" + "<td>" + row.count + "</td>" + "</tr>";
+					prevScore = row.score;
+				}
+			);	
+		}
+		return outStr;
+	};
+
+
+		Miso.Derived.prototype.printUsrScoreArray = function() {
+		var outStr;
+		var prevScore;
+		var rank = 1;
+		if (this.length > 0) {
+			outStr = "<table cellpadding=\"3\" border=\"3\">";
+			outStr = outStr + "<tr align=\"center\">" + "<td>" + "<b>Rank</b>" + "</td>" + "<td>" + "<b>Nickname</b>" + "</td>" + "<td>" + "<b>Overall Score</b>" + "</td>" + "<td>" + "<b>Participations</b>" + "</td>" + "</tr>";
+			this.each(
+				function(row){
+					if (prevScore != undefined && row.score != prevScore){
+						rank++;
+					}
+					outStr = outStr + "<tr align=\"center\">" + "<td>" + rank + "</td>" + "<td>" + row.user + "</td>" + "<td>" + row.score + "</td>" + "<td>" + row.count + "</td>" + "</tr>";
+					prevScore = row.score;
+				}
+			);	
+		}
+		return outStr;
+	};
+
+	function showData(){
+		var ds = new Miso.Dataset({
+  		url : "sampleData/scores.csv",
+  		delimiter : ","
+		});
+
+		var out = document.getElementById('content');
+
+		ds.fetch({
+		  success : function() {
+
+		  	var gbUsrScr = this.groupBy('user', ['score']);
+		  	var cbUsrPart = this.countBy('user');
+
+			var mergedAggSets = [gbUsrScr, cbUsrPart];
+			var mergedAgg = mergedAggSets.mergeDerivedSets();
+
+			mergedAgg.sort( 
+		  		function(rowA, rowB){
+		  			if (rowA.score > rowB.score) {
+		  				return -1;
+		  			}
+		  			else if (rowA.score < rowB.score) {
+		  				return 1;
+					} 
+		  			else {
+		  				if (rowA.user < rowB.user) {
+		  					return -1;
+		  				}
+		  				else if (rowA.user >rowB.user) {
+		  					return 1;
+		  				}
+		  				else {
+		  					return 0;
+		  				}
+		  			}
+		  		});
+
+			out.innerHTML = mergedAgg.printUsrScoreArray();
+		}
+		  
+		});
+
+}
+</script>
+</body>
+</html>
